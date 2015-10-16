@@ -10,7 +10,7 @@ class MyHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         # Send the html message
-        self.wfile.write(str("Hello World! Version: " + __version__))
+        self.wfile.write("<h2>Hello World!</h2><br/><b>Build Version:</b> <i>" + __version__ + "</i>")
         return
 
 class MyServer:
