@@ -1,2 +1,2 @@
 __author__ = 'crose'
-__version__ = '${version}'
+__version__ = '${build_version}'

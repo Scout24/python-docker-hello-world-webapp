@@ -12,9 +12,15 @@ use_plugin("filter_resources")
 name = "sample-app"
 default_task = "publish"
 
-version = "0.1 (" + datetime.now().strftime('%m %h %Y %H:%M:%S') + ")"
+version = "0.1"
+build_version = name + " " + version + " (" + datetime.now().strftime('%m %h %Y %H:%M:%S') + ")"
+
 
 @init
 def set_properties(project):
+    project.set_property("name", name)
+    project.set_property("version", version)
+    project.set_property("build_version", build_version)
     project.set_property("filter_resources_glob", ['**/hello_world/__init__.py'])
+    project.set_property("dir_dist", "$dir_target/dist/$name-$version")
     pass
