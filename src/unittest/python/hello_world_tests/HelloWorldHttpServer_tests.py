@@ -1,29 +1,20 @@
-import unittest2
-from hello_world.HelloWorldHttpServer import HelloWorldHandler, start_server
-from StringIO import StringIO
-import urllib2
+import unittest
+import webtest
+from hello_world import HelloWorldHttpServer
+from bottle import default_app
+
+app = default_app()
+
+test_app = webtest.TestApp(app)
 
 
-class TestHelloWorldHandlerMethods(unittest2.TestCase):
+class HelloWorldTests(unittest.TestCase):
 
-    def test_do_GET(self):
+    def test_hello_world(self):
+        resp = test_app.get("/")
+        self.assertEqual(resp.text, "<h2>Hello World!</h2><br/><b>Build Version:</b> <i>${build_version}</i>")
+        self.assertEqual(resp.status, '200 OK')
 
-        class MockRequest(object):
-
-            def makefile(self, *args, **kwargs):
-                return StringIO(b"GET /")
-
-        class MockServer(object):
-
-            def __init__(self, ip_port, Handler):
-                Handler(MockRequest(), ip_port, self)
-
-        MockServer(('0.0.0.0', 8888), HelloWorldHandler)
-
-
-class TestStartServer(unittest2.TestCase):
-
-    def test_start_server(self):
-
-        with start_server() as url:
-            print list(urllib2.urlopen(url("/")))
+    def test_hello_world_not_equals(self):
+        resp = test_app.get("/")
+        self.assertNotEqual(resp.text, "<h2>Hello World!</h2><br/><b>Build Version:</b> <i></i>")

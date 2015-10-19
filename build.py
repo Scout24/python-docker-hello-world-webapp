@@ -1,6 +1,7 @@
-import sys
-from pybuilder.core import use_plugin, init, Author
+from pybuilder.core import use_plugin, init, task
 from datetime import datetime
+from docker import Client
+import os
 
 use_plugin("python.core")
 use_plugin("python.unittest")
@@ -20,26 +21,21 @@ description = """tbd."""
 url = 'https://github.com/ImmobilienScout24/python-docker-hello-world-webapp'
 license = 'Apache License 2.0'
 
-
-build_version = name + " " + version + " (" + datetime.now().strftime('%m %h %Y %H:%M:%S') + ")"
-
+build_version = name + " " + version + " (" + datetime.now().strftime('%d %h %Y %H:%M:%S') + ")"
 
 @init
 def set_properties(project):
     project.set_property("verbose", True)
 
-    project.build_depends_on("unittest2")
+    project.depends_on("bottle")
     project.build_depends_on("webtest")
-    mock_version = "mock"
-    if sys.version_info < (2, 7):
-        mock_version += "<1.1"
+    project.build_depends_on("docker-py")
 
     project.set_property("name", name)
     project.set_property("version", version)
     project.set_property("build_version", build_version)
     project.set_property("filter_resources_glob", ['**/hello_world/HelloWorldHttpServer.py'])
     project.set_property("dir_dist", "$dir_target/dist/$name-$version")
-    project.build_depends_on(mock_version)
 
     project.set_property("flake8_include_test_sources", True)
     project.set_property('coverage_break_build', False)
