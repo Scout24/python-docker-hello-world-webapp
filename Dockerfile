@@ -1,7 +1,13 @@
 FROM python:2.7
+
 ENV PYTHONUNBUFFERED 1
-RUN mkdir /code
+ENV PYTHONPATH $PYTHONPATH:/code/
+
+RUN mkdir -p /code/hello_world
 WORKDIR /code
-ADD requirements.txt /code/
-RUN pip install -r requirements.txt
-ADD . /code/
+ADD target/dist/sample-app*/scripts /code/
+ADD target/dist/sample-app*/hello_world /code/hello_world
+
+EXPOSE 8080
+
+CMD python /code/server
