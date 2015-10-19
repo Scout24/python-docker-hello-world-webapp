@@ -1,4 +1,5 @@
 #!/usr/bin/env python
-from hello_world.MyHttpServer import start_server
+from hello_world.HelloWorldHttpServer import start_server
 
-start_server()
+start_server(5000, fork=False)
+print "started server"
