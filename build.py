@@ -1,6 +1,13 @@
+from __future__ import print_function
+
 from pybuilder.core import use_plugin, init, task
+from pybuilder.errors import BuildFailedException
 from datetime import datetime
 import os
+try:
+    import sh
+except ImportError:
+    sh = None
 
 use_plugin("python.core")
 use_plugin("python.unittest")
@@ -10,8 +17,8 @@ use_plugin("python.coverage")
 use_plugin("python.distutils")
 use_plugin("filter_resources")
 
+org_name = "is24"
 name = "sample-app"
-
 version = "0.1"
 default_task = ['analyze', 'publish']
 
@@ -29,6 +36,7 @@ def set_properties(project):
     project.depends_on("bottle")
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
+    project.build_depends_on("sh")
 
     project.set_property("name", name)
     project.set_property("version", version)
@@ -51,3 +59,18 @@ def set_properties(project):
         'Programming Language :: Python',
         'Topic :: System :: Networking'
     ])
+
+@task
+def build_docker(logger):
+    if not sh:
+        logger.error("The 'sh' module was not found!")
+        logger.error("Run 'pyb install_dependencies' to enable this task.")
+        raise BuildFailedException('Unable to run task!')
+    else:
+        for line in sh.docker(['build',
+                               '-t',
+                               '{0}/{1}:{2}'.format(org_name, name, version),
+                               '.',
+                               ]):
+
+            print(line.strip())
