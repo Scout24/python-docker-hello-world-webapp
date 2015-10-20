@@ -63,17 +63,31 @@ def set_properties(project):
     ])
 
 
-@task
-def build_docker(logger):
+def check_sh(logger):
+    """ Check if 'sh' module is installed'. """
     if not sh:
         logger.error("The 'sh' module was not found!")
         logger.error("Run 'pyb install_dependencies' to enable this task.")
         raise BuildFailedException('Unable to run task!')
-    else:
-        for line in sh.docker(['build',
-                               '-t',
-                               '{0}/{1}:{2}'.format(org_name, name, version),
-                               '.',
-                               ]):
 
-            print(line.strip())
+
+def docker_execute(command_list):
+    """ Run and tail a docker command. """
+    running_command = sh.docker(command_list)
+    for line in running_command:
+        print(line.strip())
+
+
+@task
+def docker_build(logger):
+    check_sh(logger)
+    logger.info("Will now attempt to build the docker image.")
+    docker_execute(['build', '-t',
+                    '{0}/{1}:{2}'.format(org_name, name, version), '.'])
+
+
+@task
+def docker_rmi(logger):
+    check_sh(logger)
+    logger.info("Will now attempt remove the docker image.")
+    docker_execute(['rmi', '{0}/{1}:{2}'.format(org_name, name, version)])
