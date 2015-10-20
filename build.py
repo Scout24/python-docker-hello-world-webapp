@@ -1,6 +1,5 @@
 from pybuilder.core import use_plugin, init, task
 from datetime import datetime
-from docker import Client
 import os
 
 use_plugin("python.core")
