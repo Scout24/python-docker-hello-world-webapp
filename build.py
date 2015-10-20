@@ -1,11 +1,13 @@
 from __future__ import print_function
 
+from datetime import datetime
+
 from pybuilder.core import use_plugin, init, task
 from pybuilder.errors import BuildFailedException
-from datetime import datetime
-import os
+
+
 try:
-    import sh
+    import sh  # conditional import, make pyb work w/o it being installed
 except ImportError:
     sh = None
 
@@ -59,6 +61,7 @@ def set_properties(project):
         'Programming Language :: Python',
         'Topic :: System :: Networking'
     ])
+
 
 @task
 def build_docker(logger):
