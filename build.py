@@ -1,6 +1,15 @@
-from pybuilder.core import use_plugin, init, task
+from __future__ import print_function
+
 from datetime import datetime
-import os
+
+from pybuilder.core import use_plugin, init, task
+from pybuilder.errors import BuildFailedException
+
+
+try:
+    import sh  # conditional import, make pyb work w/o it being installed
+except ImportError:
+    sh = None
 
 use_plugin("python.core")
 use_plugin("python.unittest")
@@ -10,8 +19,8 @@ use_plugin("python.coverage")
 use_plugin("python.distutils")
 use_plugin("filter_resources")
 
+org_name = "is24"
 name = "sample-app"
-
 version = "0.1"
 default_task = ['analyze', 'publish']
 
@@ -29,6 +38,7 @@ def set_properties(project):
     project.depends_on("bottle")
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
+    project.build_depends_on("sh")
 
     project.set_property("name", name)
     project.set_property("version", version)
@@ -51,3 +61,33 @@ def set_properties(project):
         'Programming Language :: Python',
         'Topic :: System :: Networking'
     ])
+
+
+def check_sh(logger):
+    """ Check if 'sh' module is installed'. """
+    if not sh:
+        logger.error("The 'sh' module was not found!")
+        logger.error("Run 'pyb install_dependencies' to enable this task.")
+        raise BuildFailedException('Unable to run task!')
+
+
+def docker_execute(command_list):
+    """ Run and tail a docker command. """
+    running_command = sh.docker(command_list)
+    for line in running_command:
+        print(line.strip())
+
+
+@task
+def docker_build(logger):
+    check_sh(logger)
+    logger.info("Will now attempt to build the docker image.")
+    docker_execute(['build', '-t',
+                    '{0}/{1}:{2}'.format(org_name, name, version), '.'])
+
+
+@task
+def docker_rmi(logger):
+    check_sh(logger)
+    logger.info("Will now attempt remove the docker image.")
+    docker_execute(['rmi', '{0}/{1}:{2}'.format(org_name, name, version)])
