@@ -9,6 +9,6 @@ WORKDIR /code
 ADD target/dist/sample-app*/scripts /code/
 ADD target/dist/sample-app*/hello_world /code/hello_world
 
-EXPOSE 8080
+EXPOSE 8080:8080
 
 CMD python /code/server

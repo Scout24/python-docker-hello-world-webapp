@@ -1,0 +1,17 @@
+region: eu-west-1
+stacks:
+
+ helloworldwebapp1:
+   template-url: templates/ecs-simple-webapp.yml
+   timeout: 1200
+   parameters:
+     dnsDomain: 'deploy.wolke.is'
+     vpcId: "|Ref|vpc.id"
+     subnetIds: "|Ref|vpc.subnets"
+     amiId: ami-977749e0
+     dockerImageVersion: latest
+     dockerAppImage: immobilienscout24/python-docker-hello-world-webapp
+     sshKeyName: aws-deployment
+     InstanceType: t2.small
+     LogStreamName: aws-deployment
+     dockerContainerName: python-docker-hello-world-webapp
