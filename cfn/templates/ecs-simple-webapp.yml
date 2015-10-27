@@ -113,6 +113,11 @@ Resources:
       Type: CNAME
   Asg:
     Type: AWS::AutoScaling::AutoScalingGroup
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MaxBatchSize: '1'
+        MinInstancesInService: '1'
+        PauseTime: PT15M
     Properties:
       AvailabilityZones:
         Fn::GetAZs:
@@ -292,6 +297,7 @@ Resources:
              - "echo ECS_CLUSTER="
              - Ref: "ECSCluster"
              - " >> /etc/ecs/ecs.config\n"
+             - "echo ECS_LOGLEVEL=debug >> /etc/ecs/ecs.config\n"
              - "echo "
              - Ref: "LogStreamName"
              - " > /etc/default/log-stream-name"

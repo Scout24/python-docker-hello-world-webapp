@@ -11,7 +11,7 @@ def hello_world():
 
 
 def run_server():
-    run(host=gethostbyname(gethostname()), port=8080)
+    run(host="0.0.0.0", port=8080)
 
 if __name__ == '__main__':
     run_server()

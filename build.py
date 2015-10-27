@@ -21,7 +21,7 @@ use_plugin("filter_resources")
 
 org_name = "immobilienscout24"
 name = "python-docker-hello-world-webapp"
-version = "0.1"
+version = "0.2"
 default_task = ['analyze', 'publish']
 
 summary = 'Simple Hello World Webapp!'
