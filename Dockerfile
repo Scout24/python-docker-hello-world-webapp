@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH $PYTHONPATH:/code/
 
 RUN mkdir -p /code/hello_world
-RUN pip install bottle
+RUN pip install bottle bottledaemon
 WORKDIR /code
 ADD target/dist/sample-app*/scripts /code/
 ADD target/dist/sample-app*/hello_world /code/hello_world

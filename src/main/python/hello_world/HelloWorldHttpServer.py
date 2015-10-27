@@ -1,5 +1,6 @@
 from bottle import route, run
-import socket
+from socket import gethostbyname, gethostname
+from bottledaemon import daemon_run
 
 __version__ = '${build_version}'
 
@@ -10,7 +11,7 @@ def hello_world():
 
 
 def run_server():
-    run(host=socket.gethostname(), port=8080)
+    daemon_run(host=gethostbyname(gethostname()), port=8080)
 
 if __name__ == '__main__':
     run_server()
