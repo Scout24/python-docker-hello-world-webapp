@@ -36,7 +36,6 @@ def set_properties(project):
     project.set_property("verbose", True)
 
     project.depends_on("bottle")
-    project.depends_on("bottledaemon")
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")
