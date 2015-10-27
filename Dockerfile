@@ -11,4 +11,4 @@ ADD target/dist/sample-app*/hello_world /code/hello_world
 
 EXPOSE 8080:8080
 
-CMD python /code/server
+ENTRYPOINT ["python", "/code/server"]

@@ -1,17 +1,24 @@
 region: eu-west-1
 stacks:
-
- helloworldwebapp1:
-   template-url: templates/ecs-simple-webapp.yml
-   timeout: 1200
-   parameters:
-     dnsDomain: 'deploy.wolke.is'
-     vpcId: "|Ref|vpc.id"
-     subnetIds: "|Ref|vpc.subnets"
-     amiId: ami-977749e0
-     dockerImageVersion: latest
-     dockerAppImage: immobilienscout24/python-docker-hello-world-webapp
-     sshKeyName: aws-deployment
-     InstanceType: t2.small
-     LogStreamName: aws-deployment
-     dockerContainerName: python-docker-hello-world-webapp
+  ecs-simple-webapp:
+    template-url: templates/ecs-simple-webapp.yml
+    timeout: 1200
+    parameters:
+      dnsDomain: 'deploy.wolke.is'
+      vpcId: "|Ref|vpc.id"
+      subnetIds: "|Ref|vpc.subnets"
+      # docker 1.8 on Ubuntu
+      # amiId: ami-59704e2e
+      # plain ECS base AMI
+      amiId: ami-6b12271c
+      dockerImageVersion: 14
+      dockerAppImage: immobilienscout24/is24-lma-logging-webapp
+      sshKeyName: aws-deployment
+      InstanceType: t2.small
+      LogStreamName: "|Ref|log-stream.KinesisStreamName"
+      dockerContainerName: is24-lma-logging-webapp
+  log-stream:
+    template-url: templates/kinesis-stream.yml
+    timeout: 1200
+    parameters:
+      NumberOfShards: 1

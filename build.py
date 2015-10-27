@@ -19,8 +19,8 @@ use_plugin("python.coverage")
 use_plugin("python.distutils")
 use_plugin("filter_resources")
 
-org_name = "is24"
-name = "sample-app"
+org_name = "immobilienscout24"
+name = "python-docker-hello-world-webapp"
 version = "0.1"
 default_task = ['analyze', 'publish']
 

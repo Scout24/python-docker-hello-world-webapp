@@ -44,7 +44,7 @@ Resources:
     Properties:
       ContainerDefinitions:
         - Name: "|ref|dockerContainerName"
-          Cpu: "1024"
+          Cpu: "10"
           Essential: "true"
           Image:
             '|Join|:':
