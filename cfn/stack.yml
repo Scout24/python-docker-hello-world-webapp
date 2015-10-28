@@ -11,7 +11,7 @@ stacks:
      dockerImageVersion: 0.2.3
      dockerAppImage: immobilienscout24/python-docker-hello-world-webapp
      sshKeyName: aws-deployment
-     InstanceType: t2.small
+     InstanceType: t2.micro
      LogStreamName: aws-deployment
      dockerContainerName: python-docker-hello-world-webapp
 
