@@ -21,7 +21,7 @@ use_plugin("filter_resources")
 
 org_name = "immobilienscout24"
 name = "python-docker-hello-world-webapp"
-version = "0.2"
+version = "0.2.3"
 default_task = ['analyze', 'publish']
 
 summary = 'Simple Hello World Webapp!'
@@ -36,6 +36,7 @@ def set_properties(project):
     project.set_property("verbose", True)
 
     project.depends_on("bottle")
+    project.depends_on("tornado")
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")

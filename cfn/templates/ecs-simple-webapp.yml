@@ -118,6 +118,7 @@ Resources:
         MaxBatchSize: '1'
         MinInstancesInService: '1'
         PauseTime: PT15M
+        WaitOnResourceSignals: true
     Properties:
       AvailabilityZones:
         Fn::GetAZs:
@@ -147,11 +148,11 @@ Resources:
         S3BucketPrefix: elb
       CrossZone: true
       HealthCheck:
-        HealthyThreshold: '10'
+        HealthyThreshold: '2'
         Interval: '10'
         Target: HTTP:8080/
         Timeout: '5'
-        UnhealthyThreshold: '2'
+        UnhealthyThreshold: '10'
       Listeners:
       - InstancePort: '8080'
         InstanceProtocol: HTTP
