@@ -318,15 +318,6 @@ Resources:
       SourceSecurityGroupId:
         Ref: elbsg
       ToPort: 8080
-  sgIngressSshFromEverywhere:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      FromPort: '22'
-      GroupId:
-        Ref: sg
-      IpProtocol: tcp
-      CidrIp: 0.0.0.0/0
-      ToPort: 22
 Outputs:
   S3LogBucket:
     Description: S3 log bucket for this stack
