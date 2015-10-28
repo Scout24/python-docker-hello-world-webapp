@@ -1,15 +1,12 @@
 from bottle import route, run
-from socket import gethostbyname, gethostname
-#from bottledaemon import daemon_run
-import time
 
 __version__ = '${build_version}'
 
 
 @route("/")
 def hello_world():
-    print(time.strftime("%c"))
-    return "<h2>Hello World!</h2><br/><b>Build Version:</b> <i>{0}</i>".format(__version__)
+    return "<html><body><h2>Hello World!</h2><br/><b>Build Version:</b> <i>{0}</i></body></html>"\
+        .format(__version__)
 
 
 def run_server():
