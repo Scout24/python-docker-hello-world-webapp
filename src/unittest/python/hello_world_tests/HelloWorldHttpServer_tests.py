@@ -1,4 +1,5 @@
 import unittest
+from hello_world.HelloWorldHttpServer import hello_world
 
 import webtest
 from bottle import default_app
