@@ -1,7 +1,8 @@
-from bottle import route, run
+from bottle import route, run, default_app
 
 __version__ = '${build_version}'
 
+app = default_app()
 
 @route("/")
 def hello_world():

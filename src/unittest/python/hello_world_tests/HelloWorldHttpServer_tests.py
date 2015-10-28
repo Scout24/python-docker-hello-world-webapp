@@ -1,10 +1,7 @@
 import unittest
-from hello_world.HelloWorldHttpServer import hello_world
 
+from hello_world.HelloWorldHttpServer import app
 import webtest
-from bottle import default_app
-
-app = default_app()
 
 test_app = webtest.TestApp(app)
 
