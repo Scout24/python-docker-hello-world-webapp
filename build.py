@@ -30,7 +30,6 @@ description = """tbd."""
 url = 'https://github.com/ImmobilienScout24/python-docker-hello-world-webapp'
 license = 'Apache License 2.0'
 
-#build_version = name + " " + version + " (" + datetime.now().strftime('%d %h %Y %H:%M:%S') + ")"
 build_version = "{0} {1} ({2})".format(name, version, datetime.now().strftime('%d %h %Y %H:%M:%S'))
 
 @init
