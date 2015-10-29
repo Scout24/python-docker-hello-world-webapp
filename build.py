@@ -141,4 +141,3 @@ def docker_rmi(logger):
     logger.info("Will now attempt remove the docker image.")
     docker_execute(['rmi', docker_image_label()], logger)
 
-
