@@ -133,7 +133,8 @@ def docker_rmi(logger):
 
 @task
 @depends("package")
-def generate_dockerfile(project):
+def generate_dockerfile(project, logger):
+    logger.info("Building the Dockerfile")
     args = {"PIP_EXTRA_ARGS": os.environ.get('PIP_EXTRA_ARGS', '')}
     template = Template(dockerfile)
     rendered = template.safe_substitute(args)
