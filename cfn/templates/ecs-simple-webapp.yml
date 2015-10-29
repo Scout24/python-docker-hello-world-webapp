@@ -117,8 +117,7 @@ Resources:
       AutoScalingRollingUpdate:
         MaxBatchSize: '1'
         MinInstancesInService: '1'
-        PauseTime: PT15M
-        WaitOnResourceSignals: true
+        PauseTime: PT5M
     Properties:
       AvailabilityZones:
         Fn::GetAZs:
