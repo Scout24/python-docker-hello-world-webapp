@@ -2,6 +2,8 @@ from __future__ import print_function
 
 from datetime import datetime
 import os
+from textwrap import dedent
+from string import Template
 
 from pybuilder.core import use_plugin, init, task, depends
 from pybuilder.errors import BuildFailedException
@@ -31,6 +33,21 @@ url = 'https://github.com/ImmobilienScout24/python-docker-hello-world-webapp'
 license = 'Apache License 2.0'
 
 build_version = "{0} {1} ({2})".format(name, version, datetime.now().strftime('%d %h %Y %H:%M:%S'))
+
+dockerfile = dedent("""
+    FROM python:2.7
+
+    ENV PYTHONUNBUFFERED 1
+    ENV PYTHONPATH $PYTHONPATH:/code/
+
+    RUN mkdir -p /code/hello_world
+    RUN pip install $PIP_EXTRA_ARGS bottle tornado
+    WORKDIR /code
+    ADD dist/python-docker-hello-world-webapp*/scripts /code/
+    ADD dist/python-docker-hello-world-webapp*/hello_world /code/hello_world
+
+    ENTRYPOINT ["python", "/code/server"]
+""")
 
 @init
 def set_properties(project):
@@ -85,11 +102,12 @@ def docker_image_label():
 
 
 @task
-@depends("package")
-def docker_build(logger):
+@depends("generate_dockerfile")
+def docker_build(project, logger):
     check_sh(logger)
     logger.info("Building the docker image: {0}".format(docker_image_label()))
-    docker_execute(['build', '-t', docker_image_label(), '.'], logger)
+    docker_execute(['build', '-t', docker_image_label(),
+                    project.expand_path("$dir_target")], logger)
 
 
 @task
@@ -111,3 +129,13 @@ def docker_rmi(logger):
     check_sh(logger)
     logger.info("Will now attempt remove the docker image.")
     docker_execute(['rmi', docker_image_label()], logger)
+
+
+@task
+@depends("package")
+def generate_dockerfile(project):
+    args = {"PIP_EXTRA_ARGS": os.environ.get('PIP_EXTRA_ARGS', '')}
+    template = Template(dockerfile)
+    rendered = template.safe_substitute(args)
+    with open(os.path.join(project.expand_path("$dir_target"), "Dockerfile"), 'wb') as fp:
+        fp.write(rendered)
