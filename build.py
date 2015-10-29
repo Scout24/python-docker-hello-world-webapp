@@ -5,7 +5,7 @@ import os
 from textwrap import dedent
 from string import Template
 
-from pybuilder.core import use_plugin, init, task, depends
+from pybuilder.core import use_plugin, init, task, depends, description
 from pybuilder.errors import BuildFailedException
 
 
@@ -100,6 +100,15 @@ def docker_execute(command_list, logger):
 def docker_image_label():
     return '{0}/{1}:{2}'.format(org_name, name, version)
 
+@task
+@depends("package")
+def generate_dockerfile(project, logger):
+    logger.info("Building the Dockerfile")
+    args = {"PIP_EXTRA_ARGS": os.environ.get('PIP_EXTRA_ARGS', '')}
+    template = Template(dockerfile)
+    rendered = template.safe_substitute(args)
+    with open(os.path.join(project.expand_path("$dir_target"), "Dockerfile"), 'wb') as fp:
+        fp.write(rendered)
 
 @task
 @depends("generate_dockerfile")
@@ -131,12 +140,3 @@ def docker_rmi(logger):
     docker_execute(['rmi', docker_image_label()], logger)
 
 
-@task
-@depends("package")
-def generate_dockerfile(project, logger):
-    logger.info("Building the Dockerfile")
-    args = {"PIP_EXTRA_ARGS": os.environ.get('PIP_EXTRA_ARGS', '')}
-    template = Template(dockerfile)
-    rendered = template.safe_substitute(args)
-    with open(os.path.join(project.expand_path("$dir_target"), "Dockerfile"), 'wb') as fp:
-        fp.write(rendered)
