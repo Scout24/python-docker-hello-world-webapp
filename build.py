@@ -1,8 +1,9 @@
 from __future__ import print_function
 
 from datetime import datetime
+import os
 
-from pybuilder.core import use_plugin, init, task
+from pybuilder.core import use_plugin, init, task, depends
 from pybuilder.errors import BuildFailedException
 
 
@@ -21,7 +22,7 @@ use_plugin("filter_resources")
 
 org_name = "immobilienscout24"
 name = "python-docker-hello-world-webapp"
-version = "0.2.3"
+version = os.environ.get('BUILD_NUMBER', 0)
 default_task = ['analyze', 'publish']
 
 summary = 'Simple Hello World Webapp!'
@@ -29,7 +30,8 @@ description = """tbd."""
 url = 'https://github.com/ImmobilienScout24/python-docker-hello-world-webapp'
 license = 'Apache License 2.0'
 
-build_version = name + " " + version + " (" + datetime.now().strftime('%d %h %Y %H:%M:%S') + ")"
+#build_version = name + " " + version + " (" + datetime.now().strftime('%d %h %Y %H:%M:%S') + ")"
+build_version = "{0} {1} ({2})".format(name, version, datetime.now().strftime('%d %h %Y %H:%M:%S'))
 
 @init
 def set_properties(project):
@@ -72,23 +74,41 @@ def check_sh(logger):
         raise BuildFailedException('Unable to run task!')
 
 
-def docker_execute(command_list):
+def docker_execute(command_list, logger):
     """ Run and tail a docker command. """
     running_command = sh.docker(command_list)
     for line in running_command:
-        print(line.strip())
+        logger.info(line.strip())
+
+
+def docker_image_label():
+    return '{0}/{1}:{2}'.format(org_name, name, version)
 
 
 @task
+@depends("package")
 def docker_build(logger):
     check_sh(logger)
-    logger.info("Will now attempt to build the docker image.")
-    docker_execute(['build', '-t',
-                    '{0}/{1}:{2}'.format(org_name, name, version), '.'])
+    logger.info("Building the docker image: {0}".format(docker_image_label()))
+    docker_execute(['build', '-t', docker_image_label(), '.'], logger)
+
+
+@task
+@depends("docker_build")
+def docker_push(logger):
+    check_sh(logger)
+    docker_execute(['-D',
+                    'login',
+                    '-u', os.environ.get('DOCKER_USERNAME', 'unknown'),
+                    '-p', os.environ.get('DOCKER_PASSWORD', 'unknown'),
+                    '-e', os.environ.get('DOCKER_EMAIL', 'unknown')],
+                   logger)
+    docker_execute(['push', docker_image_label()], logger)
+    docker_execute(['logout'], logger)
 
 
 @task
 def docker_rmi(logger):
     check_sh(logger)
     logger.info("Will now attempt remove the docker image.")
-    docker_execute(['rmi', '{0}/{1}:{2}'.format(org_name, name, version)])
+    docker_execute(['rmi', docker_image_label()], logger)
