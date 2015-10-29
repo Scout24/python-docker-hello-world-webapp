@@ -100,6 +100,7 @@ def docker_execute(command_list, logger):
 def docker_image_label():
     return '{0}/{1}:{2}'.format(org_name, name, version)
 
+
 @task
 @depends("package")
 def generate_dockerfile(project, logger):
@@ -109,6 +110,7 @@ def generate_dockerfile(project, logger):
     rendered = template.safe_substitute(args)
     with open(os.path.join(project.expand_path("$dir_target"), "Dockerfile"), 'wb') as fp:
         fp.write(rendered)
+
 
 @task
 @depends("generate_dockerfile")
