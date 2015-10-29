@@ -75,7 +75,7 @@ def check_sh(logger):
 
 def docker_execute(command_list, logger):
     """ Run and tail a docker command. """
-    running_command = sh.docker(command_list)
+    running_command = sh.docker(command_list, _iter=True)
     for line in running_command:
         logger.info(line.strip())
 
