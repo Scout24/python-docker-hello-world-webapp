@@ -11,6 +11,9 @@ Parameters:
   dockerContainerName:
     Description: Name of the application container
     Type: String
+  notificationTopicArn:
+    Description: ARN of alarming topic
+    Type: String
   sshKeyName:
     Description: SSH key name to access EC2 instances
     Type: String
@@ -37,6 +40,52 @@ Parameters:
     Description: Stream name of the Kinesis stream intended to deliver logs to
     Type: String
 Resources:
+  5xxCountAlarm:
+    Properties:
+      AlarmActions:
+      - Ref: notificationTopicArn
+      AlarmDescription: Triggers alarm when instances serve 5xx.
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: '1'
+      MetricName: HTTPCode_Backend_5XX
+      Namespace:
+        Ref: elb
+      Period: '300'
+      Statistic: Sum
+      Threshold: '0'
+    Type: AWS::CloudWatch::Alarm
+  ErrorCountAlarm:
+    Properties:
+      AlarmActions:
+      - Ref: notificationTopicArn
+      AlarmDescription: Triggers alarm when application errors occur.
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: '1'
+      MetricName: 
+        '|Join|':
+          - Ref: AWS::StackName
+          - '_errorCount'
+      Namespace: similarityreportapi
+      Period: '300'
+      Statistic: Sum
+      Threshold: '0'
+    Type: AWS::CloudWatch::Alarm
+  ElbHealthyInstances:
+    Properties:
+      AlarmActions:
+        - Ref: notificationTopicArn
+      AlarmDescription: There should be one healthy instance
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: LoadBalancerName
+          Value: '|Ref|elb'
+      EvaluationPeriods: '2'
+      MetricName: HealthyHostCount
+      Namespace: AWS/ELB
+      Period: '60'
+      Statistic: Average
+      Threshold: '1'
+    Type: AWS::CloudWatch::Alarm
   ECSCluster:
     Type: AWS::ECS::Cluster
   taskdefinition:
