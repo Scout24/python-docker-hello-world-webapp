@@ -9,3 +9,7 @@ target
 venv
 .venv
 .virtualenv
+
+Vagrantfile
+.vagrant
+host
