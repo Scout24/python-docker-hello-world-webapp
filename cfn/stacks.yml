@@ -3,7 +3,7 @@ stacks:
   alarm-notification-topic:
     template-url: templates/alarm-topic.yml
     parameters:
-      notificationEmail: "is24-it-aws-deployment@immobilienscout24.de"
+      notificationEmail: '<notification address>'
   python-docker-hello-world-webapp:
     template-url: templates/ecs-simple-webapp.yml
     timeout: 1200
