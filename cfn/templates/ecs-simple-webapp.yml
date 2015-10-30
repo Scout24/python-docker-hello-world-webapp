@@ -39,6 +39,11 @@ Parameters:
   LogStreamName:
     Description: Stream name of the Kinesis stream intended to deliver logs to
     Type: String
+  notificationTopicArn:
+    Type: String
+    Description: SNS topic to be used for alarm notifications
+    ConstraintDescription: AWS ARN for an SNS notification topic arn:aws:sns:region:account-id:topicname
+    AllowedPattern: arn:aws:sns:[\w-]+:\d{12}:[\w-]+
 Resources:
   ElbHealthyInstances:
     Properties:
@@ -336,6 +341,22 @@ Resources:
       SourceSecurityGroupId:
         Ref: elbsg
       ToPort: 8080
+  ElbHealthyInstances:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - Ref: notificationTopicArn
+        AlarmDescription: There should be one healthy instance
+        ComparisonOperator: LessThanThreshold
+        Dimensions:
+          - Name: LoadBalancerName
+            Value: '|Ref|elb'
+        EvaluationPeriods: '2'
+        MetricName: HealthyHostCount
+        Namespace: AWS/ELB
+        Period: '60'
+        Statistic: Average
+        Threshold: '1'
 Outputs:
   S3LogBucket:
     Description: S3 log bucket for this stack

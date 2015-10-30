@@ -1,9 +1,9 @@
 region: eu-west-1
 stacks:
-  test-notification-topic:
+  alarm-notification-topic:
     template-url: templates/alarm-topic.yml
     parameters:
-      notificationEmail: "is24-aws-deployment@immobilienscout24.de"
+      notificationEmail: "is24-it-aws-deployment@immobilienscout24.de"
   python-docker-hello-world-webapp:
     template-url: templates/ecs-simple-webapp.yml
     timeout: 1200
@@ -15,7 +15,7 @@ stacks:
       dockerImageVersion: 0.2.3
       dockerAppImage: immobilienscout24/python-docker-hello-world-webapp
       sshKeyName: aws-deployment
-      InstanceType: t2.small
+      InstanceType: t2.micro
       LogStreamName: aws-deployment
       dockerContainerName: python-docker-hello-world-webapp
-      notificationTopicArn: "|Ref|test-notification-topic.notificationTopicArn"
+      notificationTopicArn: "|Ref|alarm-notification-topic.notificationTopicArn"
