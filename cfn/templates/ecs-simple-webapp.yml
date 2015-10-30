@@ -40,36 +40,6 @@ Parameters:
     Description: Stream name of the Kinesis stream intended to deliver logs to
     Type: String
 Resources:
-  5xxCountAlarm:
-    Properties:
-      AlarmActions:
-      - Ref: notificationTopicArn
-      AlarmDescription: Triggers alarm when instances serve 5xx.
-      ComparisonOperator: GreaterThanThreshold
-      EvaluationPeriods: '1'
-      MetricName: HTTPCode_Backend_5XX
-      Namespace:
-        Ref: elb
-      Period: '300'
-      Statistic: Sum
-      Threshold: '0'
-    Type: AWS::CloudWatch::Alarm
-  ErrorCountAlarm:
-    Properties:
-      AlarmActions:
-      - Ref: notificationTopicArn
-      AlarmDescription: Triggers alarm when application errors occur.
-      ComparisonOperator: GreaterThanThreshold
-      EvaluationPeriods: '1'
-      MetricName: 
-        '|Join|':
-          - Ref: AWS::StackName
-          - '_errorCount'
-      Namespace: similarityreportapi
-      Period: '300'
-      Statistic: Sum
-      Threshold: '0'
-    Type: AWS::CloudWatch::Alarm
   ElbHealthyInstances:
     Properties:
       AlarmActions:
