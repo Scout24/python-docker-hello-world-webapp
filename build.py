@@ -1,13 +1,12 @@
 from __future__ import print_function
 
 from datetime import datetime
-import os
 from textwrap import dedent
 from string import Template
 
-from pybuilder.core import use_plugin, init, task, depends, description
+import os
+from pybuilder.core import use_plugin, init, task, depends
 from pybuilder.errors import BuildFailedException
-
 
 try:
     import sh  # conditional import, make pyb work w/o it being installed
@@ -25,7 +24,7 @@ use_plugin("filter_resources")
 org_name = "immobilienscout24"
 name = "python-docker-hello-world-webapp"
 version = os.environ.get('BUILD_NUMBER', 0)
-default_task = ['analyze', 'publish']
+default_task = ['analyze', 'docker_push']
 
 summary = 'Simple Hello World Webapp!'
 description = """tbd."""
