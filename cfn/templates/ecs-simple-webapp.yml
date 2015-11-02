@@ -45,22 +45,6 @@ Parameters:
     ConstraintDescription: AWS ARN for an SNS notification topic arn:aws:sns:region:account-id:topicname
     AllowedPattern: arn:aws:sns:[\w-]+:\d{12}:[\w-]+
 Resources:
-  ElbHealthyInstances:
-    Properties:
-      AlarmActions:
-        - Ref: notificationTopicArn
-      AlarmDescription: There should be one healthy instance
-      ComparisonOperator: LessThanThreshold
-      Dimensions:
-        - Name: LoadBalancerName
-          Value: '|Ref|elb'
-      EvaluationPeriods: '2'
-      MetricName: HealthyHostCount
-      Namespace: AWS/ELB
-      Period: '60'
-      Statistic: Average
-      Threshold: '1'
-    Type: AWS::CloudWatch::Alarm
   ECSCluster:
     Type: AWS::ECS::Cluster
   taskdefinition:
