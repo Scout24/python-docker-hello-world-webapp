@@ -23,7 +23,7 @@ use_plugin("filter_resources")
 
 org_name = "immobilienscout24"
 name = "python-docker-hello-world-webapp"
-version = os.environ.get('BUILD_NUMBER', 0)
+version = 14
 default_task = ['analyze', 'docker_push']
 
 summary = 'Simple Hello World Webapp!'
@@ -140,3 +140,17 @@ def docker_rmi(logger):
     logger.info("Will now attempt remove the docker image.")
     docker_execute(['rmi', docker_image_label()], logger)
 
+
+@init(environments='teamcity')
+def set_properties_for_teamcity_builds(project):
+    project.set_property('teamcity_output', True)
+
+    project.version = '%s-%s' % (project.version,
+                                 os.environ.get('BUILD_NUMBER', 0))
+    project.default_task = [
+        'clean',
+        'install_build_dependencies',
+        'docker_push'
+    ]
+    project.set_property('install_dependencies_index_url',
+                         os.environ.get('PYPIPROXY_URL'))
