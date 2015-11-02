@@ -4,7 +4,7 @@ __version__ = '${build_version}'
 
 app = default_app()
 
-@route("/")
+@app.route("/")
 def hello_world():
     return "<html><body><h2>Hello World!</h2><br/><b>Build Version:</b> <i>{0}</i></body></html>"\
         .format(__version__)
