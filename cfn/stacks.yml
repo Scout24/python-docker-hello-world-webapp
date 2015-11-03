@@ -12,7 +12,7 @@ stacks:
       vpcId: "|Ref|vpc.id"
       subnetIds: "|Ref|vpc.subnets"
       amiId: ami-6b12271c
-      dockerImageVersion: 0.2.3
+      dockerImageVersion: "|keepOrUse|15"
       dockerAppImage: immobilienscout24/python-docker-hello-world-webapp
       sshKeyName: aws-deployment
       InstanceType: t2.micro
