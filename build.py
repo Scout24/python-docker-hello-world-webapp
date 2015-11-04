@@ -135,7 +135,6 @@ def docker_rmi(logger):
     docker_execute(['rmi', docker_image_label()], logger)
 
 
-<<<<<<< HEAD
 def upload_helper(project, logger, bucket_name, keyname, data):
     import boto3
     s3 = boto3.resource('s3')
@@ -166,6 +165,7 @@ def build_json(project, logger):
 
     upload_helper(project, logger, bucket_name, version_path, output)
     upload_helper(project, logger, bucket_name, latest_path, output)
+
 
 @init(environments='teamcity')
 def set_properties_for_teamcity_builds(project):
