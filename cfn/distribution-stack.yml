@@ -1,0 +1,7 @@
+region: eu-west-1
+stacks:
+  distribution:
+    template-url: templates/bootstrap.yaml
+    parameters:
+      bucketName: '<bucket-name>'
+      principalName: '<arn>'

@@ -31,7 +31,8 @@ description = """tbd."""
 url = 'https://github.com/ImmobilienScout24/python-docker-hello-world-webapp'
 license = 'Apache License 2.0'
 
-build_version = "{0} {1} ({2})".format(name, version, datetime.now().strftime('%d %h %Y %H:%M:%S'))
+build_version = "{0} {1} ({2})".format(
+    name, version, datetime.now().strftime('%d %h %Y %H:%M:%S'))
 
 dockerfile = dedent("""
     FROM python:2.7
@@ -48,6 +49,7 @@ dockerfile = dedent("""
     ENTRYPOINT ["python", "/code/server"]
 """)
 
+
 @init
 def set_properties(project):
     project.set_property("verbose", True)
@@ -61,7 +63,8 @@ def set_properties(project):
     project.set_property("name", name)
     project.set_property("version", version)
     project.set_property("build_version", build_version)
-    project.set_property("filter_resources_glob", ['**/hello_world/HelloWorldHttpServer.py'])
+    project.set_property(
+        "filter_resources_glob", ['**/hello_world/HelloWorldHttpServer.py'])
     project.set_property("dir_dist", "$dir_target/dist/$name-$version")
 
     project.set_property("flake8_include_test_sources", True)
@@ -79,6 +82,12 @@ def set_properties(project):
         'Programming Language :: Python',
         'Topic :: System :: Networking'
     ])
+
+    project.set_property(
+        'bucket_name', os.environ.get('BUCKET_NAME_FOR_UPLOAD'))
+    project.set_property(
+        'lambda_file_access_control',
+        os.environ.get('LAMBDA_FILE_ACCESS_CONTROL'))
 
 
 def check_sh(logger):
@@ -140,3 +149,34 @@ def docker_rmi(logger):
     logger.info("Will now attempt remove the docker image.")
     docker_execute(['rmi', docker_image_label()], logger)
 
+
+def upload_helper(project, logger, bucket_name, keyname, data):
+    import boto3
+    s3 = boto3.resource('s3')
+    logger.info("Uploading cfn.json to bucket: '{0}' as key: '{1}'".
+                format(bucket_name, keyname))
+    acl = project.get_property('lambda_file_access_control')
+    s3.Bucket(bucket_name).put_object(
+        Key=keyname, Body=data, ACL=acl)
+
+
+@task('build_json',
+      description='Convert & upload CFN JSON from the template YAML files')
+def build_json(project, logger):
+    from cfn_sphere.aws.cloudformation.template_loader import (
+        CloudFormationTemplateLoader)
+    from cfn_sphere.aws.cloudformation.template_transformer import (
+        CloudFormationTemplateTransformer)
+
+    template = CloudFormationTemplateLoader.get_template_from_url(
+        'bootstrap.yml', 'cfn/templates')
+    transformed = CloudFormationTemplateTransformer.transform_template(
+        template)
+    output = transformed.get_template_json()
+
+    bucket_name = project.get_property('bucket_name')
+    version_path = 'v{0}/{1}.json'.format(project.version, project.name)
+    latest_path = 'latest/{0}.json'.format(project.name)
+
+    upload_helper(project, logger, bucket_name, version_path, output)
+    upload_helper(project, logger, bucket_name, latest_path, output)

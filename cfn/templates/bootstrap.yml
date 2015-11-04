@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: python-docker-hello-world-webapp distribution infrastructure
+Parameters:
+  bucketName:
+    Description: Name of the S3 bucket where the latest webapp configuration template can be downloaded from.
+    Type: String
+  principalName:
+    Description: The ARN of the role which can upload new template configuration
+    Type: String
+Resources:
+  projectBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Ref: bucketName
+      AccessControl: PublicRead
+  crassusBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: crassusBucket
+        PolicyDocument:
+          Statement:
+            - Action: 's3:PutObject'
+              Effect: Allow
+              Principal:
+                AWS:
+                  Ref: principalName
+              Resource:
+                '|Join|':
+                  - 'arn:aws:s3:::'
+                  - Ref: projectBucket
+                  - '/*'
