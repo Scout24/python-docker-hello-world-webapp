@@ -6,12 +6,7 @@ from string import Template
 
 import os
 from pybuilder.core import use_plugin, init, task, depends
-from pybuilder.errors import BuildFailedException
 
-try:
-    import sh  # conditional import, make pyb work w/o it being installed
-except ImportError:
-    sh = None
 
 use_plugin("python.core")
 use_plugin("python.unittest")
@@ -90,16 +85,9 @@ def set_properties(project):
         os.environ.get('LAMBDA_FILE_ACCESS_CONTROL'))
 
 
-def check_sh(logger):
-    """ Check if 'sh' module is installed'. """
-    if not sh:
-        logger.error("The 'sh' module was not found!")
-        logger.error("Run 'pyb install_dependencies' to enable this task.")
-        raise BuildFailedException('Unable to run task!')
-
-
 def docker_execute(command_list, logger):
     """ Run and tail a docker command. """
+    import sh
     running_command = sh.docker(command_list, _iter=True)
     for line in running_command:
         logger.info(line.strip())
@@ -123,7 +111,6 @@ def generate_dockerfile(project, logger):
 @task
 @depends("generate_dockerfile")
 def docker_build(project, logger):
-    check_sh(logger)
     logger.info("Building the docker image: {0}".format(docker_image_label()))
     docker_execute(['build', '-t', docker_image_label(),
                     project.expand_path("$dir_target")], logger)
@@ -132,7 +119,6 @@ def docker_build(project, logger):
 @task
 @depends("docker_build")
 def docker_push(logger):
-    check_sh(logger)
     docker_execute(['-D',
                     'login',
                     '-u', os.environ.get('DOCKER_USERNAME', 'unknown'),
@@ -145,11 +131,11 @@ def docker_push(logger):
 
 @task
 def docker_rmi(logger):
-    check_sh(logger)
     logger.info("Will now attempt remove the docker image.")
     docker_execute(['rmi', docker_image_label()], logger)
 
 
+<<<<<<< HEAD
 def upload_helper(project, logger, bucket_name, keyname, data):
     import boto3
     s3 = boto3.resource('s3')
@@ -180,3 +166,14 @@ def build_json(project, logger):
 
     upload_helper(project, logger, bucket_name, version_path, output)
     upload_helper(project, logger, bucket_name, latest_path, output)
+
+@init(environments='teamcity')
+def set_properties_for_teamcity_builds(project):
+    project.set_property('teamcity_output', True)
+    project.default_task = [
+        'clean',
+        'install_build_dependencies',
+        'docker_push'
+    ]
+    project.set_property('install_dependencies_index_url',
+                         os.environ.get('PYPIPROXY_URL'))
