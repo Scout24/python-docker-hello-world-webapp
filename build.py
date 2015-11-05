@@ -153,18 +153,19 @@ def build_json(project, logger):
     from cfn_sphere.aws.cloudformation.template_transformer import (
         CloudFormationTemplateTransformer)
 
-    template = CloudFormationTemplateLoader.get_template_from_url(
-        'bootstrap.yml', 'cfn/templates')
-    transformed = CloudFormationTemplateTransformer.transform_template(
-        template)
-    output = transformed.get_template_json()
+    for template_name in ['ecs-simple-webapp', 'alarm-topic']:
+        template = CloudFormationTemplateLoader.get_template_from_url(
+            '{0}.yml'.format(template_name), 'cfn/templates')
+        transformed = CloudFormationTemplateTransformer.transform_template(
+            template)
+        output = transformed.get_template_json()
 
-    bucket_name = project.get_property('bucket_name')
-    version_path = 'v{0}/{1}.json'.format(project.version, project.name)
-    latest_path = 'latest/{0}.json'.format(project.name)
+        bucket_name = project.get_property('bucket_name')
+        version_path = 'v{0}/{1}.json'.format(project.version, template_name)
+        latest_path = 'latest/{0}.json'.format(template_name)
 
-    upload_helper(project, logger, bucket_name, version_path, output)
-    upload_helper(project, logger, bucket_name, latest_path, output)
+        upload_helper(project, logger, bucket_name, version_path, output)
+        upload_helper(project, logger, bucket_name, latest_path, output)
 
 
 @init(environments='teamcity')
