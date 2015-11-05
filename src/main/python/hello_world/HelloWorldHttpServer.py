@@ -1,4 +1,4 @@
-from bottle import route, run, default_app
+from bottle import run, default_app
 
 __version__ = '${build_version}'
 
