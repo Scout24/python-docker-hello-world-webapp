@@ -10,8 +10,8 @@ def hello_world():
         .format(__version__)
 
 
-def run_server():
+def run_server(): #pragma: no cover
     run(host="0.0.0.0", port=8080, server="tornado")
 
-if __name__ == '__main__':
+if __name__ == '__main__': #pragma: no cover
     run_server()
