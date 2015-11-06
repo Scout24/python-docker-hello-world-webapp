@@ -8,7 +8,7 @@ stacks:
     template-url: templates/ecs-simple-webapp.yml
     timeout: 1200
     parameters:
-      dnsDomain: 'deploy.wolke.is'
+      dnsDomain: '<dns domain entry>'
       vpcId: "|Ref|vpc.id"
       subnetIds: "|Ref|vpc.subnets"
       amiId: ami-6b12271c
