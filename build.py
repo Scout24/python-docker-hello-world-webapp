@@ -55,6 +55,7 @@ def set_properties(project):
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")
     project.build_depends_on("cfn-sphere")
+    project.build_depends_on("boto3")
 
     project.set_property("name", name)
     project.set_property("version", version)
