@@ -54,6 +54,7 @@ def set_properties(project):
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")
+    project.build_depends_on("cfn-sphere")
 
     project.set_property("name", name)
     project.set_property("version", version)
