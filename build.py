@@ -145,9 +145,9 @@ def upload_helper(project, logger, bucket_name, keyname, data):
         Key=keyname, Body=data, ACL=acl)
 
 
-@task('build_json',
+@task('upload_cfn_template',
       description='Convert & upload CFN JSON from the template YAML files')
-def build_json(project, logger):
+def upload_cfn_template(project, logger):
     from cfn_sphere.aws.cloudformation.template_loader import (
         CloudFormationTemplateLoader)
     from cfn_sphere.aws.cloudformation.template_transformer import (
@@ -174,6 +174,7 @@ def set_properties_for_teamcity_builds(project):
     project.default_task = [
         'clean',
         'install_build_dependencies',
+        'upload_cfn_template',
         'docker_push'
     ]
     project.set_property('install_dependencies_index_url',
