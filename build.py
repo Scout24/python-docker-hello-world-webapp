@@ -153,7 +153,7 @@ def build_json(project, logger):
     from cfn_sphere.aws.cloudformation.template_transformer import (
         CloudFormationTemplateTransformer)
 
-    for template_name in ['ecs-simple-webapp', 'alarm-topic']:
+    for template_name in ['ecs-simple-webapp', 'alarm-topic', 'ecs-minimal-webapp']:
         template = CloudFormationTemplateLoader.get_template_from_url(
             '{0}.yml'.format(template_name), 'cfn/templates')
         transformed = CloudFormationTemplateTransformer.transform_template(
