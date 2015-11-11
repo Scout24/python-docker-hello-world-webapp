@@ -132,7 +132,7 @@ Resources:
           Ref: AWS::Region
       Cooldown: '10'
       HealthCheckGracePeriod: '600'
-      HealthCheckType: EC2
+      HealthCheckType: ELB
       LaunchConfigurationName:
         Ref: LaunchConfiguration
       LoadBalancerNames:
