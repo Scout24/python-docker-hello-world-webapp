@@ -50,7 +50,7 @@ def set_properties(project):
     project.set_property("verbose", True)
 
     project.depends_on("bottle")
-    project.depends_on("tornado")
+    project.depends_on("gunicorn")
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")
