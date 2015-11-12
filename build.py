@@ -54,6 +54,8 @@ def set_properties(project):
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")
+    project.build_depends_on("cfn-sphere")
+    project.build_depends_on("boto3")
 
     project.set_property("name", name)
     project.set_property("version", version)
@@ -145,15 +147,15 @@ def upload_helper(project, logger, bucket_name, keyname, data):
         Key=keyname, Body=data, ACL=acl)
 
 
-@task('build_json',
+@task('upload_cfn_template',
       description='Convert & upload CFN JSON from the template YAML files')
-def build_json(project, logger):
+def upload_cfn_template(project, logger):
     from cfn_sphere.aws.cloudformation.template_loader import (
         CloudFormationTemplateLoader)
     from cfn_sphere.aws.cloudformation.template_transformer import (
         CloudFormationTemplateTransformer)
 
-    for template_name in ['ecs-simple-webapp', 'alarm-topic']:
+    for template_name in ['ecs-simple-webapp', 'alarm-topic', 'ecs-minimal-webapp']:
         template = CloudFormationTemplateLoader.get_template_from_url(
             '{0}.yml'.format(template_name), 'cfn/templates')
         transformed = CloudFormationTemplateTransformer.transform_template(
@@ -174,6 +176,7 @@ def set_properties_for_teamcity_builds(project):
     project.default_task = [
         'clean',
         'install_build_dependencies',
+        'upload_cfn_template',
         'docker_push'
     ]
     project.set_property('install_dependencies_index_url',

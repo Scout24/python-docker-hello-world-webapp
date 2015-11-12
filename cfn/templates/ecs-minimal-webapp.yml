@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: ecs simple webapp for logging
+Description: "ecs minimal webapp"
 Parameters:
   dockerImageVersion:
     Description: Docker image version
@@ -8,26 +8,19 @@ Parameters:
   dockerAppImage:
     Description: Docker application image
     Type: String
+    Default: immobilienscout24/python-docker-hello-world-webapp
   dockerContainerName:
     Description: Name of the application container
     Type: String
-  notificationTopicArn:
-    Description: ARN of alarming topic
-    Type: String
-  sshKeyName:
-    Description: SSH key name to access EC2 instances
-    Type: String
-  dnsDomain:
-    Description: DNS Domain to use for the service
-    Type: String
+    Default: python-docker-hello-world-webapp
   subnetIds:
     ConstraintDescription: comma separated list of subnet-ids, defaults for Ireland
-    Default: subnet-4324981a, subnet-96ff8df3, subnet-a471ebd3
     Description: Subnet IDs
     Type: List<AWS::EC2::Subnet::Id>
   amiId:
     Description: Id of the base AMI
     Type: AWS::EC2::Image::Id
+    Default: ami-6b12271c
   vpcId:
     ConstraintDescription: must begin with vpc- and can contain only alphanumeric
       characters. defaults for Ireland
@@ -36,14 +29,7 @@ Parameters:
   InstanceType:
     Description: Instance Type
     Type: String
-  LogStreamName:
-    Description: Stream name of the Kinesis stream intended to deliver logs to
-    Type: String
-  notificationTopicArn:
-    Type: String
-    Description: SNS topic to be used for alarm notifications
-    ConstraintDescription: AWS ARN for an SNS notification topic arn:aws:sns:region:account-id:topicname
-    AllowedPattern: arn:aws:sns:[\w-]+:\d{12}:[\w-]+
+    Default: t2.micro
 Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
@@ -103,22 +89,6 @@ Resources:
                 Action:
                   - "elasticloadbalancing:*"
                 Resource: "*"
-  DnsRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      Comment: Static URL for stack
-      HostedZoneName:
-        '|Join|':
-          - '|Ref|dnsDomain'
-          - '.'
-      Name:
-        '|Join|.':
-          - Ref: AWS::StackName
-          - '|Ref|dnsDomain'
-      ResourceRecords:
-        - '|GetAtt|elb|DNSName'
-      TTL: '900'
-      Type: CNAME
   Asg:
     Type: AWS::AutoScaling::AutoScalingGroup
     UpdatePolicy:
@@ -147,12 +117,6 @@ Resources:
   elb:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
-      AccessLoggingPolicy:
-        EmitInterval: 5
-        Enabled: false
-        S3BucketName:
-          Ref: s3LogBucket
-        S3BucketPrefix: elb
       CrossZone: true
       HealthCheck:
         HealthyThreshold: '2'
@@ -169,28 +133,6 @@ Resources:
       - Ref: elbsg
       Subnets:
         Ref: subnetIds
-  s3LogBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      AccessControl: LogDeliveryWrite
-  s3LogBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket:
-        Ref: s3LogBucket
-      PolicyDocument:
-        Statement:
-          - Action: 's3:PutObject'
-            Effect: Allow
-            Principal:
-              AWS:
-              - 156460612806
-              - 054676820928
-            Resource:
-              '|Join|':
-                - 'arn:aws:s3:::'
-                - Ref: s3LogBucket
-                - '/elb/AWSLogs/*'
   elbsg:
     Properties:
       GroupDescription: ELB
@@ -238,29 +180,11 @@ Resources:
       Policies:
       - PolicyDocument:
           Statement:
-          - Action:
-            - logs:Describe*
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Effect: Allow
-            Resource: "*"
-          Version: '2012-10-17'
-        PolicyName: awslogs
-      - PolicyDocument:
-          Statement:
           - Action: elasticloadbalancing:*
             Effect: Allow
             Resource: '*'
           Version: '2012-10-17'
         PolicyName: allow-elb-healthcheck
-      - PolicyDocument:
-          Statement:
-          - Action: cloudwatch:PutMetricData
-            Effect: Allow
-            Resource: '*'
-          Version: '2012-10-17'
-        PolicyName: allow-putMetric
       - PolicyDocument:
           Statement:
           - Action:
@@ -274,18 +198,6 @@ Resources:
             Resource: '*'
           Version: '2012-10-17'
         PolicyName: esc-service
-      - PolicyDocument:
-          Statement:
-          - Action:
-            - kinesis:DescribeStream
-            - kinesis:PutRecord
-            - kinesis:PutRecords
-            - kinesis:GetShardIterator
-            - kinesis:GetRecords
-            Effect: Allow
-            Resource: "*"
-          Version: '2012-10-17'
-        PolicyName: allow-put-on-kinesis-logstream
   LaunchConfiguration:
     Type: "AWS::AutoScaling::LaunchConfiguration"
     Properties:
@@ -295,7 +207,6 @@ Resources:
       ImageId: "|ref|amiId"
       InstanceType: "|ref|InstanceType"
       IamInstanceProfile: "|ref|iamInstanceProfile"
-      KeyName: "|ref|sshKeyName"
       UserData:
         Fn::Base64:
           Fn::Join:
@@ -305,10 +216,6 @@ Resources:
              - "echo ECS_CLUSTER="
              - Ref: "ECSCluster"
              - " >> /etc/ecs/ecs.config\n"
-             - "echo ECS_LOGLEVEL=debug >> /etc/ecs/ecs.config\n"
-             - "echo "
-             - Ref: "LogStreamName"
-             - " > /etc/default/log-stream-name"
   sg:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -328,8 +235,6 @@ Resources:
   ElbHealthyInstances:
       Type: AWS::CloudWatch::Alarm
       Properties:
-        AlarmActions:
-          - Ref: notificationTopicArn
         AlarmDescription: There should be one healthy instance
         ComparisonOperator: LessThanThreshold
         Dimensions:
@@ -342,9 +247,6 @@ Resources:
         Statistic: Average
         Threshold: '1'
 Outputs:
-  S3LogBucket:
-    Description: S3 log bucket for this stack
-    Value: '|GetAtt|s3LogBucket|WebsiteURL'
   WebsiteURL:
     Description: Service URL
     Value:
