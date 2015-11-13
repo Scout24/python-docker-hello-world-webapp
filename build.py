@@ -82,7 +82,7 @@ def set_properties(project):
     ])
 
     project.set_property(
-        'template_file_access_control', os.environ.get('CFN_FILE_ACCESS_CONTROL'))
+        'template_file_access_control', os.environ.get('LAMBDA_FILE_ACCESS_CONTROL'))
     project.set_property('template_files',
                          [
                              ('cfn/templates/', 'alarm-topic.yml'),
