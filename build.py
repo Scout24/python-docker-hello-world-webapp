@@ -15,6 +15,7 @@ use_plugin("python.flake8")
 use_plugin("python.coverage")
 use_plugin("python.distutils")
 use_plugin("filter_resources")
+use_plugin("pypi:pybuilder_aws_lambda_plugin")
 
 org_name = "immobilienscout24"
 name = "python-docker-hello-world-webapp"
@@ -50,7 +51,7 @@ def set_properties(project):
     project.set_property("verbose", True)
 
     project.depends_on("bottle")
-    project.depends_on("gunicorn")
+    project.depends_on("gevent")
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")
@@ -79,6 +80,15 @@ def set_properties(project):
         'Programming Language :: Python',
         'Topic :: System :: Networking'
     ])
+
+    project.set_property(
+        'template_file_access_control', os.environ.get('CFN_FILE_ACCESS_CONTROL'))
+    project.setProperty('template_files',
+                        [
+                            ('cfn/templates/', 'alarm-topic.yml'),
+                            ('cfn/templates/', 'ecs-simple-webapp'),
+                            ('cfn/templates/', 'ecs-minimal-webapp')
+                        ])
 
     project.set_property(
         'bucket_name', os.environ.get('BUCKET_NAME_FOR_UPLOAD'))
@@ -145,29 +155,6 @@ def upload_helper(project, logger, bucket_name, keyname, data):
     acl = project.get_property('lambda_file_access_control')
     s3.Bucket(bucket_name).put_object(
         Key=keyname, Body=data, ACL=acl)
-
-
-@task('upload_cfn_template',
-      description='Convert & upload CFN JSON from the template YAML files')
-def upload_cfn_template(project, logger):
-    from cfn_sphere.aws.cloudformation.template_loader import (
-        CloudFormationTemplateLoader)
-    from cfn_sphere.aws.cloudformation.template_transformer import (
-        CloudFormationTemplateTransformer)
-
-    for template_name in ['ecs-simple-webapp', 'alarm-topic', 'ecs-minimal-webapp']:
-        template = CloudFormationTemplateLoader.get_template_from_url(
-            '{0}.yml'.format(template_name), 'cfn/templates')
-        transformed = CloudFormationTemplateTransformer.transform_template(
-            template)
-        output = transformed.get_template_json()
-
-        bucket_name = project.get_property('bucket_name')
-        version_path = 'v{0}/{1}.json'.format(project.version, template_name)
-        latest_path = 'latest/{0}.json'.format(template_name)
-
-        upload_helper(project, logger, bucket_name, version_path, output)
-        upload_helper(project, logger, bucket_name, latest_path, output)
 
 
 @init(environments='teamcity')

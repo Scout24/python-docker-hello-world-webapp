@@ -11,7 +11,7 @@ def hello_world():
 
 
 def run_server(): #pragma: no cover
-    run(host="0.0.0.0", port=8080, server="gunicorn")
+    run(host="0.0.0.0", port=8080, server="gevent")
 
 if __name__ == '__main__': #pragma: no cover
     run_server()
