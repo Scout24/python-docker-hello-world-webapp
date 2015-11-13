@@ -86,8 +86,8 @@ def set_properties(project):
     project.set_property('template_files',
                          [
                              ('cfn/templates/', 'alarm-topic.yml'),
-                             ('cfn/templates/', 'ecs-simple-webapp'),
-                             ('cfn/templates/', 'ecs-minimal-webapp')
+                             ('cfn/templates/', 'ecs-simple-webapp.yml'),
+                             ('cfn/templates/', 'ecs-minimal-webapp.yml')
                          ])
 
     project.set_property(
