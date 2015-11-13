@@ -84,11 +84,11 @@ def set_properties(project):
     project.set_property(
         'template_file_access_control', os.environ.get('CFN_FILE_ACCESS_CONTROL'))
     project.set_property('template_files',
-                        [
-                            ('cfn/templates/', 'alarm-topic.yml'),
-                            ('cfn/templates/', 'ecs-simple-webapp'),
-                            ('cfn/templates/', 'ecs-minimal-webapp')
-                        ])
+                         [
+                             ('cfn/templates/', 'alarm-topic.yml'),
+                             ('cfn/templates/', 'ecs-simple-webapp'),
+                             ('cfn/templates/', 'ecs-minimal-webapp')
+                         ])
 
     project.set_property(
         'bucket_name', os.environ.get('BUCKET_NAME_FOR_UPLOAD'))
@@ -163,7 +163,7 @@ def set_properties_for_teamcity_builds(project):
     project.default_task = [
         'clean',
         'install_build_dependencies',
-        'upload_cfn_template',
+        'upload_cfn_to_s3',
         'docker_push'
     ]
     project.set_property('install_dependencies_index_url',
