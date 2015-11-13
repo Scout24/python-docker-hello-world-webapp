@@ -83,7 +83,7 @@ def set_properties(project):
 
     project.set_property(
         'template_file_access_control', os.environ.get('CFN_FILE_ACCESS_CONTROL'))
-    project.setProperty('template_files',
+    project.set_property('template_files',
                         [
                             ('cfn/templates/', 'alarm-topic.yml'),
                             ('cfn/templates/', 'ecs-simple-webapp'),
