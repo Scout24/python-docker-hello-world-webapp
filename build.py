@@ -51,7 +51,7 @@ def set_properties(project):
     project.set_property("verbose", True)
 
     project.depends_on("bottle")
-    project.depends_on("gevent")
+    project.depends_on("paste")
     project.build_depends_on("webtest")
     project.build_depends_on("docker-py")
     project.build_depends_on("sh")
@@ -145,16 +145,6 @@ def docker_push(logger):
 def docker_rmi(logger):
     logger.info("Will now attempt remove the docker image.")
     docker_execute(['rmi', docker_image_label()], logger)
-
-
-def upload_helper(project, logger, bucket_name, keyname, data):
-    import boto3
-    s3 = boto3.resource('s3')
-    logger.info("Uploading cfn.json to bucket: '{0}' as key: '{1}'".
-                format(bucket_name, keyname))
-    acl = project.get_property('lambda_file_access_control')
-    s3.Bucket(bucket_name).put_object(
-        Key=keyname, Body=data, ACL=acl)
 
 
 @init(environments='teamcity')
