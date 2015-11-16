@@ -37,7 +37,7 @@ dockerfile = dedent("""
     ENV PYTHONPATH $PYTHONPATH:/code/
 
     RUN mkdir -p /code/hello_world
-    RUN pip install $PIP_EXTRA_ARGS bottle tornado
+    RUN pip install $PIP_EXTRA_ARGS bottle paste
     WORKDIR /code
     ADD dist/python-docker-hello-world-webapp*/scripts /code/
     ADD dist/python-docker-hello-world-webapp*/hello_world /code/hello_world
