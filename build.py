@@ -15,7 +15,7 @@ use_plugin("python.flake8")
 use_plugin("python.coverage")
 use_plugin("python.distutils")
 use_plugin("filter_resources")
-use_plugin("pypi:pybuilder_aws_lambda_plugin")
+use_plugin("pypi:pybuilder_aws_plugin")
 
 org_name = "immobilienscout24"
 name = "python-docker-hello-world-webapp"
