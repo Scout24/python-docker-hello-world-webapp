@@ -8,7 +8,7 @@ app = default_app()
 @app.route('/')
 @app.route('/<name>')
 def hello_world(name='World'):
-    return ('<html><body><h2>Hello Guild {0}!</h2>'
+    return ('<html><body><h2>Hello {0}!</h2>'
             '<br/><b>Build Version:</b>'
             ' <i>{1}</i></body></html>').format(name, __version__)
 
