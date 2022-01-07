@@ -2,6 +2,8 @@
 [![Code Health](https://landscape.io/github/ImmobilienScout24/python-docker-hello-world-webapp/master/landscape.svg?style=flat)](https://landscape.io/github/ImmobilienScout24/python-docker-hello-world-webapp/master)
 [![Coverage Status](https://coveralls.io/repos/ImmobilienScout24/python-docker-hello-world-webapp/badge.svg?branch=master&service=github)](https://coveralls.io/github/ImmobilienScout24/python-docker-hello-world-webapp?branch=master)
 
+# This project is DEPRECATED and not any longer supported
+
 # python-docker-hello-world-webapp
 A test project for docker-ized deployment chain into the AWS cloud, implemented with Python
 
